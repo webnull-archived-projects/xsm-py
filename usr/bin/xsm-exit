@@ -53,7 +53,7 @@ elif args[0] == "lock":
         os.system("/usr/bin/xscreensaver-command -lock")
     elif 'gnome-screensaver' in output:
         print "Going to sleep with gnome-screensaver..."
-        os.system("/usr/bin/gnome-screensaveer 
+        os.system("/usr/bin/gnome-screensaver") 
     else:
         print "No any working screensaver application found running."
 
