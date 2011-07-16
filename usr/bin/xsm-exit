@@ -10,7 +10,7 @@ args = sys.argv[1:]
 
 def usage():
     print "## X-Session Manager ( Made by WebNuLL )"
-    print "Available options: logout, shutdown, reboot, lock, kexec"
+    print "Available options: logout, shutdown, reboot, lock, kexec, hibernate, suspend"
     exit(os.EX_USAGE)
 
 if len(args) == 0:
