@@ -23,6 +23,9 @@ X-Session Manager supports technologies and software:
   + XScreensaver  
 
 Author: webnull < webnull at ubuntu dot pl > (Its Jabber adress, dont send mail)
+16.07.2011:
+    * Fixed error in /usr/bin/xsm-exit, usage wasnt terminating application
+
 
 16.07.2011:
     + Added KDE4 session
