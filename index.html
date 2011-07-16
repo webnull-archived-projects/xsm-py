@@ -128,6 +128,10 @@ Available options: logout, shutdown, reboot, lock, kexec
 $ xsm-exit lock
 Going to sleep with xscreensaver...
 </pre>
+            <p><b>Session Manager installation for specified user:</b></p>
+<pre>$ ln -s /usr/bin/xsm-init /home/webnull/.xinitrc
+# You must link .xinitrc with /usr/bin/xsm-init to allow selecting sessions for specified users
+</pre>
 
             <div class="footer">
                 Project page: <a href="https://github.com/webnull/xsm-py" style="text-decoration: none;">xsm-py</a> | Author's website: <a href="http://webnull.kablownia.org" style="text-decoration: none;">webnull.kablownia.org</a>
