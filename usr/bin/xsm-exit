@@ -1,0 +1,149 @@
+#!/usr/bin/python
+#### License: GPLv3 
+#### X-Session Manager written in Python (xsm-py)
+#### This code was rewrited from Bash to Python
+
+import os, sys, re, commands
+
+# Arguments passed to xsm-exit
+args = sys.argv[1:]
+
+def usage():
+    print "## X-Session Manager ( Made by WebNuLL )"
+    print "Available options: logout, shutdown, reboot, lock, kexec"
+
+if len(args) == 0:
+    usage()
+
+if args[0] == "shutdown":
+    print "Shutting down the machine..."
+    os.system("/sbin/shutdown -h now")
+
+elif args[0] == "reboot":
+    print "Rebooting the machine..."
+    os.system("/sbin/shutdown -r now")
+
+elif args[0] == "hibernate":
+    print "Hibernating the machine..."
+    os.system("/usr/sbin/pm-hibernate")
+
+elif args[0] == "suspend":
+    print "Suspending the machine..."
+    os.system("/usr/sbin/pm-suspend")
+
+elif args[0] == "logout":
+    if 'root' in commands.getoutput('whoami'):
+        print "Root cant use logout command in this version of xsm-exit..."
+        sys.exit(os.EX_NOPERM)
+
+    # we are looking for good solution for killing only X11 session
+    print "Logging out user session..."
+    os.system("killall xinit -u `whoami`")
+
+elif args[0] == "lock":
+    if 'root' in commands.getoutput('whoami'):
+        print "Root cant use lock command in this version of xsm-exit..."
+        sys.exit(os.EX_NOPERM)
+
+    output = commands.getoutput('ps -aux')
+    
+    # xscreensaver
+    if 'xscreensaver' in output:
+        print "Going to sleep with xscreensaver..."
+        os.system("/usr/bin/xscreensaver-command -lock")
+    elif 'gnome-screensaver' in output:
+        print "Going to sleep with gnome-screensaver..."
+        os.system("/usr/bin/gnome-screensaveer 
+    else:
+        print "No any working screensaver application found running."
+
+elif args[0] == "kexec":
+    if args[1] == "reloadOS":
+        os.system("/usr/sbin/kexec -e --reuse-cmdline")
+        sys.exit(os.EX_DATAERR)
+
+    sys.path.insert( 0, '/usr/lib/libpybootutils/' ) # to import libpybootutils
+
+    # GRUB 2 detection
+    if os.path.isfile("/boot/grub/grub.cfg"):
+        import grub
+        List = grub.BootLoaderParser()
+        List.loadFile("/boot/grub/grub.cfg")
+
+    # For GRUB 0.97 (Legacy)
+    elif os.path.isfile("/boot/grub/menu.lst"):
+        import grubLegacy
+        List = grubLegacy.BootLoaderParser()
+        List.loadFile("/boot/grub/menu.lst")
+
+    try:
+        kexecOS = False
+        i=0
+        for OperatingSystem in List.results:
+            i=i+1
+
+            if i == int(args[1]):
+                kexecOS = OperatingSystem
+                break
+
+        if kexecOS == False:
+            print "[kexec] No maching operating system found for id="+str(int(args[1]))
+            sys.exit(os.EX_DATAERR)
+
+        kexecArgs = "/usr/sbin/kexec"
+
+        # check if kernel exists - it will works here if its in /boot
+        if os.path.isfile(kexecOS["kernel"]):
+            kexecArgs += " "+kexecOS["kernel"]
+        else:
+            put,get = os.popen4("/bin/mount")
+            result = get.read()
+
+            mountPoint = re.findall(kexecOS['partition']+" on (.*) type", result)
+
+            # mountpoint of partition is now known
+            if len(mountPoint) == 1:
+                kexecArgs += " "+mountPoint[0]+kexecOS["kernel"]
+
+                # if initrd is in the same place as kernel
+                if os.path.isfile(mountPoint[0]+str(kexecOS['initrd'])):
+                    kexecArgs += " --initrd="+mountPoint[0]+str(kexecOS['initrd'])
+                    kexecOS['initrd'] = False
+
+                if not os.path.isfile(mountPoint[0]+kexecOS["kernel"]):
+                    print "[kexec] Cannot find kernel in "+mountPoint[0]+kexecOS["kernel"]+", giving up..."
+                    sys.exit(os.EX_OSFILE)
+
+            else:
+                # try to mount partition
+                os.mkdir("/mnt/xsm-py-kexec")
+                os.system("/bin/mount "+kexecOS['partition']+" /mnt/xsm-py-kexec") # mount partition containing kernel file
+
+                # if initrd is in the same place as kernel
+                if os.path.isfile("/mnt/xsm-py/kexec"+str(kexecOS['initrd'])):
+                    kexecArgs += " --initrd=/mnt/xsm-py/kexec"+str(kexecOS['initrd'])
+                    kexecOS['initrd'] = False
+
+                if os.path.isfile("/mnt/xsm-py-kexec"+kexecOS["kernel"]):
+                    kexecArgs += " /mnt/xsm-py-kexec"+kexecOS["kernel"]
+                else:
+                    print "[kexec] Cannot find kernel in /mnt/xsm-py-kexec"+kexecOS["kernel"]+", giving up..."
+                    os.system("/bin/umount /mnt/xsm-py-kexec") # unmount
+                    os.system("/bin/rmdir /mnt/xsm-py-kexec") # clean up
+                    sys.exit(os.EX_OSFILE)
+
+        if kexecOS["initrd"] != False:
+            # if initrd found in /boot path
+            if os.path.isfile(kexecOS["initrd"]):
+                kexecArgs += " --initrd="+kexecOS["initrd"]
+
+        kexecArgs += " --command-line=\""+kexecOS["kernel_params"].replace('\"', '\\"')+"\""
+
+        print "[kexec] Executing: "+kexecArgs
+        os.system(kexecArgs)
+
+    except Exception as error:
+        print "[kexec] There was an error making kexec request. Error message: "+str(error)
+else:
+    usage()
+

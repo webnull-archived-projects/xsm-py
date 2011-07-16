@@ -1,0 +1,17 @@
+#!/bin/bash
+#openbox &
+if [ "$1" == "end_self" ]
+then
+	sleep 10 && killall zenity
+fi
+
+if [ `whoami` != "root" ]
+then
+	/ush/share/xsm/sessions/dev-shell end_self &
+	zenity --info --text="This shell is avaible only for root user."
+else	
+	terminal -x "/opt/dev-shell/shell-open" &
+	feh --bg-scale /root/background.png &
+
+	exec ck-launch-session openbox
+fi

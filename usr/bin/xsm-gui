@@ -1,0 +1,217 @@
+#!/usr/bin/python2
+#-*- coding: utf-8 -*-
+# By WebNuLL licensed on GPLv3 ( polish: www.fastpc.pl, english/polish/all-languages: http://youtube.com/webnull )
+# Thanks to jan bodnar ( zetcode.com  ) for tutorial
+# ICONS FROM GNOME PACK CONVERTED TO XPM FORMAT
+
+
+import gtk
+import os
+import commands
+import array
+import sys
+import time
+
+incpath="/usr/share/alang/python/";
+sys.path.insert( 0, incpath )
+import_string = "from alang import alang"
+
+try:
+       	exec import_string
+except ImportError, e:
+        print("Error " + str(e.args))
+
+alang=alang()
+alang.pathPrefix = ""
+MyDefLang=alang.loadLanguage('xsmgui')
+
+style = "normal"
+
+def xpm_label_box(parent, xpm_filename, label_text):
+    # Create box for xpm and label
+    box1 = gtk.HBox(False, 0)
+    box1.set_border_width(2)
+
+    # Now on to the image stuff
+    image = gtk.Image()
+    image.set_from_file(xpm_filename)
+
+    # Create a label for the button
+    label = gtk.Label(label_text)
+
+    # Pack the pixmap and label into the box
+    box1.pack_start(image, False, False, 3)
+    box1.pack_start(label, False, False, 3)
+
+    image.show()
+    label.show()
+    return box1
+
+class PyApp(gtk.Window):
+
+    #### EXECUTE COMMAND
+    def shutdown(self, widget, data=None):
+        self.window.destroy()
+        gtk.main_quit()
+        print "[shutdown] Executing command: "+data
+        os.system (data)
+
+    def kexecButtonPress(self, widget, event):
+        self.menu.popup(None, None, None, event.button, event.time)
+        return True
+
+    def __init__(self):
+        super(PyApp, self).__init__()
+
+        global MyDefLang
+        self.set_resizable(False)
+        self.set_title(MyDefLang[5])
+        self.connect("destroy", lambda wid: gtk.main_quit())
+        self.connect("delete_event", lambda a1,a2:gtk.main_quit())
+        self.set_border_width(0)
+        if style == "small":
+            self.set_size_request(390, 360)
+        else:
+            self.set_size_request(390, 440)
+
+        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_icon_from_file("/usr/share/xsm/icons/logout_icon.png")
+            
+
+	    #### REBOOT BUTTON
+        btn1 = gtk.Button()
+        btn1.set_size_request(170, 62);
+
+        box1 = xpm_label_box(self.window, "/usr/share/xsm/icons/system-reboot.xpm", MyDefLang[2])
+        btn1.connect("clicked", self.shutdown, 'reboot')
+        btn1.add(box1);
+
+	    #### FAST REBOOT BUTTON (KEXEC)
+        btnKexec = gtk.Button()
+        btnKexec.set_size_request(170, 62);
+        btnKexecBox = xpm_label_box(self.window, "/usr/share/xsm/icons/system-kexec.xpm", MyDefLang[9])
+        btnKexec.connect("button-press-event", self.kexecButtonPress)
+        btnKexec.add(btnKexecBox);
+        btnKexec.set_sensitive(False)
+
+        if os.path.isfile("/usr/sbin/kexec") or os.path.isfile("/sbin/kexec") or os.path.isfile("/usr/bin/exec"):
+            btnKexec.set_sensitive(True)
+            self.menu = gtk.Menu() 
+            sys.path.insert( 0, '/usr/lib/libpybootutils' )
+
+            # GRUB 2 detection
+            if os.path.isfile("/boot/grub/grub.cfg"):
+                import grub
+                List = grub.BootLoaderParser()
+                List.loadFile("/boot/grub/grub.cfg")
+
+            # For GRUB 0.97 (Legacy)
+            elif os.path.isfile("/boot/grub/menu.lst"):
+                import grubLegacy
+                List = grubLegacy.BootLoaderParser()
+                List.loadFile("/boot/grub/menu.lst")
+
+            try:
+                i=0
+                for OperatingSystem in List.results:
+                    if OperatingSystem['kernel_type'] == "Linux":
+                        i=i+1
+                        PositionMenu = gtk.MenuItem(OperatingSystem['title'])
+                        PositionMenu.connect("activate", self.shutdown, 'sudo /usr/bin/xsm-exit kexec '+str(i))
+                        self.menu.append(PositionMenu)
+
+
+            except Exception as error:
+                print "[kexec] Cannot identify bootloader. Error message: "+str(error)
+
+            reloadOS = gtk.ImageMenuItem(MyDefLang[10])
+            Image = gtk.Image()
+            Image.set_from_stock(gtk.STOCK_REFRESH, 2)
+            reloadOS.set_image(Image)
+            reloadOS.connect("activate", self.shutdown, 'sudo /usr/bin/xsm-exit kexec reloadOS')
+            cancel = gtk.ImageMenuItem(gtk.STOCK_CANCEL)
+            self.menu.append(reloadOS)
+            self.menu.append(cancel)
+            self.menu.show_all()
+
+	    #### SHUTDOWN
+        btn2 = gtk.Button()
+        btn2.set_size_request(350, 62);
+        box2 = xpm_label_box(self.window, "/usr/share/xsm/icons/system-shutdown.xpm", MyDefLang[1])
+        btn2.connect("clicked", self.shutdown, 'sudo /usr/bin/xsm-exit shutdown')
+        btn2.add(box2);
+
+	    #### LOGOUT
+        btn3 = gtk.Button()
+
+        if style == "small":
+	        btn3.set_size_request(170,62);
+        else:
+	        btn3.set_size_request(350,62);
+
+        box3 = xpm_label_box(self.window, "/usr/share/xsm/icons/system-logout.xpm", MyDefLang[3]);
+        btn3.connect("clicked", self.shutdown, '/usr/bin/xsm-exit logout')
+        btn3.add(box3);
+
+	    ##### LOCK SCREEN
+        btn4 = gtk.Button()
+        if style == "small":
+	        btn4.set_size_request(170,62);
+        else:
+	        btn4.set_size_request(350,62);
+
+        box4 = xpm_label_box(self.window, "/usr/share/xsm/icons/system-lock.xpm", MyDefLang[4]);
+        btn4.connect("clicked", self.shutdown, '/usr/bin/xsm-exit lock')
+        btn4.add(box4);
+
+	    ##### HIBERNATE
+        btn5 = gtk.Button()
+        btn5.set_size_request(170,62);
+        box5 = xpm_label_box(self.window, "/usr/share/xsm/icons/system-hibernate.xpm", MyDefLang[7]);
+        btn5.connect("clicked", self.shutdown, 'sudo /usr/bin/xsm-exit hibernate')
+        btn5.add(box5);
+
+	    ##### SUSPEND
+        btn6 = gtk.Button()
+        btn6.set_size_request(170,62);
+        box6 = xpm_label_box(self.window, "/usr/share/xsm/icons/system-suspend.xpm", MyDefLang[8]);
+        btn6.connect("clicked", self.shutdown, 'sudo /usr/bin/xsm-exit suspend')
+        btn6.add(box6);
+
+
+
+	    #### CHECK FOR XSCREENSAVER
+        output = commands.getoutput('ps -aux')
+        if 'xscreensaver' in output or 'gnome-screensaver' in output:
+            btn4.set_sensitive(True)
+        else:
+            print(MyDefLang[6])
+            btn4.set_sensitive(False)
+
+            fixed = gtk.Fixed()
+
+            if style == "small":
+                fixed.put(btn1, 20, 30) # Restart
+                fixed.put(btnKexec, 200, 30) # Kexec restart "Fast restart"
+                fixed.put(btn2, 20, 112) # Shutdown
+                fixed.put(btn3, 20, 194) # Logout
+                fixed.put(btn4, 200, 194) # Lock (20,276)
+                fixed.put(btn5, 20, 276) # Hibernate
+                fixed.put(btn6, 200, 276) # Suspend
+            else:
+                fixed.put(btn1, 20, 30)
+                fixed.put(btnKexec, 200, 30) # Kexec restart "Fast restart"
+                fixed.put(btn2, 20, 112)
+                fixed.put(btn3, 20, 194)
+                fixed.put(btn4, 20, 276)
+                fixed.put(btn5, 20, 358)
+                fixed.put(btn6, 200, 358)
+            
+            self.connect("destroy", gtk.main_quit)
+            
+            self.add(fixed)
+            self.show_all()
+
+
+PyApp()
+gtk.main()
