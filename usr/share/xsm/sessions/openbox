@@ -1,0 +1,5 @@
+#!/bin/bash
+#openbox &
+boxbg restore
+lxpanel &
+exec ck-launch-session openbox

@@ -1,0 +1,37 @@
+xsm-py is a simple X-Session Manager written in Python for all graphical environments.
+This is very lightweight application so you can use it everywhere, you can even use it as your session switcher on Fluxbox, Openbox, LXDE, Xfce, GNOME or KDE.
+Its a first graphical interface with implemented kexec support.
+Enjoy using it, report bugs, thank you.
+
+Dependencies: alang-py (simple translations library) >= 1.1, python >= 2.x < 3, gtk >= 2, Unix compatibile operating system, sudo
+Supported platforms: Linux, FreeBSD, OpenBSD, NetBSD
+Notice: Application should work on FreeBSD, OpenBSD and NetBSD but wasnt tested yet.
+
+
+Other dependencies:
+    For Kexec support:
+    + kexec
+    + libpybootutils (for kexec operating systems listing)
+
+    For screensavers support:
+    + gnome-screensaver (optional)
+    + xscreensaver (optional)
+
+X-Session Manager supports technologies and software:
+  + Kexec
+  + GNOME Screensaver
+  + XScreensaver  
+
+Author: webnull < webnull at ubuntu dot pl > (Its Jabber adress, dont send mail)
+
+16.07.2011:
+    + Added KDE4 session
+    + Added versioning informations
+    + Updated locales
+    + Lock function added in Python xsm-exit code
+
+15.07.2011:
+    + Kexec support with GUI (wow, first GUI in GTK for Kexec!)
+    + Rewrited xsm-exit code from Bash to Python
+    + "Fast restart" button
+    + Window is not resizable now

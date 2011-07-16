@@ -1,0 +1,26 @@
+#!/bin/bash
+session=$1
+
+# load default
+if [ "$session" == "" ]
+then
+	if [ -f "$HOME/.xsm" ]
+	then
+		sh "$HOME/.xsm"
+	else
+		zenity --info --text="No $HOME/.xsm file found, using ~/.xinitrc instead, please fix this."
+	fi
+else
+	if [ -f "/usr/share/xsm/sessions/$session" ]
+	then
+		sh "/usr/share/xsm/sessions/$session"
+	else
+		zenity --info --text="Selected X session doesnt exists, loading default session"
+		if [ -f "$HOME/.xsm" ]
+		then
+			sh "$HOME/.xsm"
+		else
+			zenity --info --text="No $HOME/.xsm file found, using ~/.xinitrc instead, please fix this."
+		fi
+	fi
+fi
