@@ -3,7 +3,7 @@
 #### X-Session Manager written in Python (xsm-py)
 #### This code was rewrited from Bash to Python
 
-import os, sys, re, commands
+import os, sys, re, commands, time
 
 # Arguments passed to xsm-exit
 args = sys.argv[1:]
@@ -60,8 +60,52 @@ elif args[0] == "lock":
 
 elif args[0] == "kexec":
     if args[1] == "reloadOS":
-        os.system("/usr/sbin/kexec -e --reuse-cmdline")
+        # get kernel parametrs
+        cmdline = commands.getoutput("cat /proc/cmdline")
+        parseCMDLine = re.findall("BOOT_IMAGE=([A-Za-z0-9\_\.\-/]+)([ ]+)(.*)", cmdline)
+        print parseCMDLine
+
+        # if kexec was used before
+        if len(parseCMDLine) == 0:
+            print "[kexec] BOOT_IMAGE not found in /proc/cmdline, searching for xsm_image"
+
+            # xsm_image=/boot/path
+            findXSMImage = re.findall("xsm_image=([A-Za-z0-9\_\.\-/]+)", cmdline)
+            if len(findXSMImage) == 1:
+                kernel = findXSMImage[0]
+                # kexec_jump_back_entry=0xffffffff
+                findKexecEntry = re.findall("kexec_jump_back_entry=([a-z0-9]+)", cmdline)
+                if len(findKexecEntry) == 1:
+                    cmdline.replace(findKexecEntry[0][0], "")
+
+                newCMDLine = cmdline
+                print "[kexec] Found kernel="+kernel+", and cmdline="+newCMDLine
+            else:
+                print "[kexec] Cannot find kernel after kexec, aborting... Next time dont use kexec manually, use /usr/bin/xsm-exit kexec reloadOS instead."
+                sys.exit(os.EX_OSFILE)
+
+        # if kexec wasnt used before and BOOT_IMAGE param is still here
+        elif len(parseCMDLine) == 1:
+            print "[kexec] BOOT_IMAGE found in /proc/cmdline"
+            if os.path.isfile(parseCMDLine[0][0]):
+                kernel = parseCMDLine[0][0] # use BOOT_IMAGE
+                newCMDLine = parseCMDLine[0][2]
+
+                # Add xsm_image param for next usage of XSM (will remember kernel path)
+                findXSMImage = re.findall("xsm_image=([A-Za-z0-9\_\.\-/]+)", newCMDLine)
+                if len(findXSMImage) == 0:
+                    newCMDLine += " xsm_image="+kernel
+
+                print "[kexec] Found kernel="+kernel+", and cmdline="+newCMDLine
+            else:
+                print "[kexec] Cannot find kernel, aborting..."
+                sys.exit(os.EX_OSFILE)
+
+        print "Applying CMDLine: "+newCMDLine
+
+        os.system("/usr/sbin/kexec "+kernel+" --command-line=\""+newCMDLine+"\"")
         sys.exit(os.EX_DATAERR)
+
 
     sys.path.insert( 0, '/usr/lib/libpybootutils/' ) # to import libpybootutils
 
