@@ -74,67 +74,20 @@
                 <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
             </div>
 
-            <span style="font-size: 30px;">X-Session Manager (XSM-PY)</span>
+            <span style="font-size: 30px;">Support for bootloaders</span>
 
-            <div class="description">
-              X-Session Manager is a Python implementation of session management in X11. 
-              <br/>It allows you to select desktop environment you want to work in (if login manager provides these functions too). XSM is a first graphical user interface with <b>implemented kexec</b>, it allows you to <b>reboot machine without reinitializing hardware</b> (skipping BIOS).
-            </div>
+            <p style="font-size: 15px;">
+            Bootloader support is handled by <a href="https://github.com/webnull/libpybootutils" target="_blank">libpybootutils</a> and really depends only on this library.<br/>
+            XSM will support all bootloaders of which are supported by <a href="https://github.com/webnull/libpybootutils" target="_blank">libpybootutils</a>.<br/>
+            To check progress of implementing bootloaders parsers you may visit <a href="https://github.com/webnull/libpybootutils" target="_blank">libpybootutils</a> homepage.<br/><br/>
 
-            <div style="text-align: center;">
-                <a href="#">Appearance</a> | <a href="kexec.html">How kexec works</a> | <a href="creating-session.html">Customizing sessions</a> | <a href="bootloader-support.html">Support for bootloaders</a><br/><br/><br/>
-                <img src="kexec-support.png" class="non_transparent_objects">
-            </div>
+            <img src="grub-legacy.png" style="width: 400px; height: 250px; border: solid 2px grey;"/> <img src="grub.png" style="width: 400px; height: 250px; border: solid 2px grey;"/>
 
-            <p><b>License:</b> This software is distributed on Open and Free Software terms - <a href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3</a>
-            <br/><b>Requirements:</b> Python 2.x, PyGTK, GTK, X11, <a href="https://github.com/webnull/alang-py">alang-py</a>
-            <br/><b>Optional requirements:</b> kexec, <a href="https://github.com/webnull/libpybootutils">libpybootutils</a>
-            <br/><b>Source code:</b> <a href="https://github.com/webnull/xsm-py" style="text-decoration: none;">xsm-py</a>
+            <br/><br/><a href="index.html">&gt; Go back</a>
             </p>
 
-
-            <p>To download project files you need a <a href="http://git-scm.com" style="text-decoration: none;">Git</a>, then you can execute:
-                <pre>$ git clone git://github.com/webnull/xsm-py</pre>
-
-                     To install you just need to run ./install.sh as root:
-                <pre>$ sudo ./install.sh</pre>
-            </p>
-
-
-            <p>Predefined sessions are stored in /usr/share/xsm/sessions
-                <pre>$ ls /usr/share/xsm/sessions/
-default  dev-shell  kde4  openbox</pre>
-                </pre>
-            </p>
-
-            <p>Example of session:</p>
-                <pre>$ cat /usr/share/xsm/sessions/openbox
-#!/bin/bash
-#openbox &
-boxbg restore
-lxpanel &
-exec ck-launch-session openbox</pre>
-
-            <p>Users can have also custom sessions in their $HOME/.xsm files</p>
-<pre>$ cat /home/webnull/.xsm
-#!/bin/sh
-pidgin &
-skype &
-exec ck-launch-session startkde
-</pre>
-
-            <p>To exit session you dont have to run GTK version of /usr/bin/xsm-gui, you can use /usr/bin/xsm-exit</p>
-<pre>$ xsm-exit
-## X-Session Manager ( Made by WebNuLL )
-Available options: logout, shutdown, reboot, lock, kexec, hibernate, suspend
-
-$ xsm-exit lock
-Going to sleep with xscreensaver...
-</pre>
-            <p><b>Session Manager installation for specified user:</b></p>
-<pre>$ ln -s /usr/bin/xsm-init /home/webnull/.xinitrc
-# You must link .xinitrc with /usr/bin/xsm-init to allow selecting sessions for specified users
-</pre>
+            <br/>
+            <small><i>GRUB2 image source: <a href="http://img.xrmb2.net/images/771492.png" rel="nofollow" target="_blank">http://img.xrmb2.net/images/771492.png</a></i></small>
 
             <div class="footer">
                 Project page: <a href="https://github.com/webnull/xsm-py" style="text-decoration: none;">xsm-py</a> | Author's website: <a href="http://webnull.kablownia.org" style="text-decoration: none;">webnull.kablownia.org</a>

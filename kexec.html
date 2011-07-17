@@ -74,67 +74,29 @@
                 <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
             </div>
 
-            <span style="font-size: 30px;">X-Session Manager (XSM-PY)</span>
+            <span style="font-size: 30px;">How kexec works in XSM-Py</span>
 
             <div class="description">
-              X-Session Manager is a Python implementation of session management in X11. 
-              <br/>It allows you to select desktop environment you want to work in (if login manager provides these functions too). XSM is a first graphical user interface with <b>implemented kexec</b>, it allows you to <b>reboot machine without reinitializing hardware</b> (skipping BIOS).
+              Kernel execution "Kexec" is a mechanism of the Linux kernel that allows "live" booting of a new kernel "over" the currently running kernel. <b>kexec skips the bootloader stage</b> (hardware initialization phase by the firmware or BIOS) and directly loads the new kernel into memory, where it starts executing immediately. <b>This avoids the long times associated with a full reboot, and can help systems to meet high-availability requirements by minimizing downtime.</b>
+             <br/><br/><b>Source:</b> <a href="http://en.wikipedia.org/wiki/Kexec">Wikipedia.org</a>
             </div>
 
-            <div style="text-align: center;">
-                <a href="#">Appearance</a> | <a href="kexec.html">How kexec works</a> | <a href="creating-session.html">Customizing sessions</a> | <a href="bootloader-support.html">Support for bootloaders</a><br/><br/><br/>
-                <img src="kexec-support.png" class="non_transparent_objects">
-            </div>
-
-            <p><b>License:</b> This software is distributed on Open and Free Software terms - <a href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3</a>
-            <br/><b>Requirements:</b> Python 2.x, PyGTK, GTK, X11, <a href="https://github.com/webnull/alang-py">alang-py</a>
-            <br/><b>Optional requirements:</b> kexec, <a href="https://github.com/webnull/libpybootutils">libpybootutils</a>
-            <br/><b>Source code:</b> <a href="https://github.com/webnull/xsm-py" style="text-decoration: none;">xsm-py</a>
+            <p style="font-size: 15px;">XSM-Py implements kexec in shell and GUI client, you can easily select a Linux based operating system you want to instant boot-in.
+            At day 17.07.2011 xsm is a first graphical user interface implementing easy and quick access to kexec technology for all users at mass scale.
+            <br/><br/><b>List of operating systems</b>
+            <br/>
+            To create functional list of available installed operating systems XSM uses libpybootutils - bootloaders configuration parser.<br/>
+            If you want to see supported bootloaders list you may visit <a href="bootloader-support.html">Support for other bootloaders subpage</a>.<br/><br/>
+            <br/><b>Getting current kernel path</b>
+            <br/>Current path where kernel image of currently booted OS is placed can be taken from /proc/cmdline, its usually first parametr <b>BOOT_IMAGE</b>.
+            <br/>Kexec removes <b>BOOT_IMAGE</b> parametr while booting new kernel.
+            <br/>So after first "Quick reboot" xsm adds <b>xsm_image</b> variable to kernel command-line containing path of currently loaded kernel.
+            <br/>This trick allows xsm remeber where is placed currently booted kernel even if kexec removes <b>BOOT_IMAGE</b> variable.
+            <br/><br/>Example of command created and executed by xsm:
+            <br/><pre>kexec /boot/linux-3.0 --command-line="root=/dev/sda1 ro quiet xsm_image=/boot/linux-3.0"</pre>
+            <br/><br/><a href="index.html">&gt; Go back</a>
             </p>
 
-
-            <p>To download project files you need a <a href="http://git-scm.com" style="text-decoration: none;">Git</a>, then you can execute:
-                <pre>$ git clone git://github.com/webnull/xsm-py</pre>
-
-                     To install you just need to run ./install.sh as root:
-                <pre>$ sudo ./install.sh</pre>
-            </p>
-
-
-            <p>Predefined sessions are stored in /usr/share/xsm/sessions
-                <pre>$ ls /usr/share/xsm/sessions/
-default  dev-shell  kde4  openbox</pre>
-                </pre>
-            </p>
-
-            <p>Example of session:</p>
-                <pre>$ cat /usr/share/xsm/sessions/openbox
-#!/bin/bash
-#openbox &
-boxbg restore
-lxpanel &
-exec ck-launch-session openbox</pre>
-
-            <p>Users can have also custom sessions in their $HOME/.xsm files</p>
-<pre>$ cat /home/webnull/.xsm
-#!/bin/sh
-pidgin &
-skype &
-exec ck-launch-session startkde
-</pre>
-
-            <p>To exit session you dont have to run GTK version of /usr/bin/xsm-gui, you can use /usr/bin/xsm-exit</p>
-<pre>$ xsm-exit
-## X-Session Manager ( Made by WebNuLL )
-Available options: logout, shutdown, reboot, lock, kexec, hibernate, suspend
-
-$ xsm-exit lock
-Going to sleep with xscreensaver...
-</pre>
-            <p><b>Session Manager installation for specified user:</b></p>
-<pre>$ ln -s /usr/bin/xsm-init /home/webnull/.xinitrc
-# You must link .xinitrc with /usr/bin/xsm-init to allow selecting sessions for specified users
-</pre>
 
             <div class="footer">
                 Project page: <a href="https://github.com/webnull/xsm-py" style="text-decoration: none;">xsm-py</a> | Author's website: <a href="http://webnull.kablownia.org" style="text-decoration: none;">webnull.kablownia.org</a>
