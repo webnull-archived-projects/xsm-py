@@ -1,8 +1,19 @@
 #!/usr/bin/python2
 #-*- coding: utf-8 -*-
-# By WebNuLL licensed on GPLv3 ( polish: www.fastpc.pl, english/polish/all-languages: http://youtube.com/webnull )
-# Thanks to jan bodnar ( zetcode.com  ) for tutorial
-# ICONS FROM GNOME PACK CONVERTED TO XPM FORMAT
+#############################################################################
+##                                                                         ##
+##  Copyleft by WebNuLL < webnull.www at gmail dot com >                   ##
+##                                                                         ##
+## This program is free software; you can redistribute it and/or modify it ##
+## under the terms of the GNU General Public License version 3 as          ##
+## published by the Free Software Foundation; version 3.                   ##
+##                                                                         ##
+## This program is distributed in the hope that it will be useful, but     ##
+## WITHOUT ANY WARRANTY; without even the implied warranty of              ##
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU       ##
+## General Public License for more details.                                ##
+##                                                                         ##
+#############################################################################
 
 
 import gtk
@@ -11,6 +22,7 @@ import commands
 import array
 import sys
 import time
+import ConfigParser as configparser
 
 incpath="/usr/share/alang/python/";
 sys.path.insert( 0, incpath )
@@ -25,7 +37,21 @@ alang=alang()
 alang.pathPrefix = ""
 MyDefLang=alang.loadLanguage('xsmgui')
 
-style = "normal"
+# CONFIGURATION
+Parser = configparser.ConfigParser()
+userConfigDir = os.path.expanduser("~/.xsm-configs/xsm-gui.ini")
+
+if os.path.isfile(userConfigDir):
+    Parser.read(userConfigDir)
+elif os.path.isfile("/etc/xsm/xsm-gui.ini"):
+    Parser.read("/etc/xsm/xsm-gui.ini")
+else:
+    Parser.read("/usr/share/xsm/xsm-gui.ini")
+
+if Parser.get("interface", "style"):
+    style = Parser.get("interface", "style")
+else:
+    style = "normal"
 
 def xpm_label_box(parent, xpm_filename, label_text):
     # Create box for xpm and label
@@ -92,44 +118,45 @@ class PyApp(gtk.Window):
         btnKexec.add(btnKexecBox);
         btnKexec.set_sensitive(False)
 
-        if os.path.isfile("/usr/sbin/kexec") or os.path.isfile("/sbin/kexec") or os.path.isfile("/usr/bin/exec"):
-            btnKexec.set_sensitive(True)
-            self.menu = gtk.Menu() 
+        if not Parser.get("interface", "kexec") == "disabled":
+            if os.path.isfile("/usr/sbin/kexec") or os.path.isfile("/sbin/kexec") or os.path.isfile("/usr/bin/exec"):
+                btnKexec.set_sensitive(True)
+                self.menu = gtk.Menu() 
 
-            # GRUB 2 detection
-            if os.path.isfile("/boot/grub/grub.cfg"):
-                import libpybootutils.grub as bootParser
-                List = bootParser.BootLoaderParser()
-                List.loadFile("/boot/grub/grub.cfg")
+                # GRUB 2 detection
+                if os.path.isfile("/boot/grub/grub.cfg"):
+                    import libpybootutils.grub as bootParser
+                    List = bootParser.BootLoaderParser()
+                    List.loadFile("/boot/grub/grub.cfg")
 
-            # For GRUB 0.97 (Legacy)
-            elif os.path.isfile("/boot/grub/menu.lst"):
-                import libpybootutils.grubLegacy as bootParser
-                List = bootParser.BootLoaderParser()
-                List.loadFile("/boot/grub/menu.lst")
+                # For GRUB 0.97 (Legacy)
+                elif os.path.isfile("/boot/grub/menu.lst"):
+                    import libpybootutils.grubLegacy as bootParser
+                    List = bootParser.BootLoaderParser()
+                    List.loadFile("/boot/grub/menu.lst")
 
-            try:
-                i=0
-                for OperatingSystem in List.results:
-                    if OperatingSystem['kernel_type'] == "Linux":
-                        i=i+1
-                        PositionMenu = gtk.MenuItem(OperatingSystem['title'])
-                        PositionMenu.connect("activate", self.shutdown, 'sudo /usr/bin/xsm-exit kexec '+str(i))
-                        self.menu.append(PositionMenu)
+                try:
+                    i=0
+                    for OperatingSystem in List.results:
+                        if OperatingSystem['kernel_type'] == "Linux":
+                            i=i+1
+                            PositionMenu = gtk.MenuItem(OperatingSystem['title'])
+                            PositionMenu.connect("activate", self.shutdown, 'sudo /usr/bin/xsm-exit kexec '+str(i))
+                            self.menu.append(PositionMenu)
 
 
-            except Exception as error:
-                print "[kexec] Cannot identify bootloader. Error message: "+str(error)
+                except Exception as error:
+                    print "[kexec] Cannot identify bootloader. Error message: "+str(error)
 
-            reloadOS = gtk.ImageMenuItem(MyDefLang[10])
-            Image = gtk.Image()
-            Image.set_from_stock(gtk.STOCK_REFRESH, 2)
-            reloadOS.set_image(Image)
-            reloadOS.connect("activate", self.shutdown, 'sudo /usr/bin/xsm-exit kexec reloadOS')
-            cancel = gtk.ImageMenuItem(gtk.STOCK_CANCEL)
-            self.menu.append(reloadOS)
-            self.menu.append(cancel)
-            self.menu.show_all()
+                reloadOS = gtk.ImageMenuItem(MyDefLang[10])
+                Image = gtk.Image()
+                Image.set_from_stock(gtk.STOCK_REFRESH, 2)
+                reloadOS.set_image(Image)
+                reloadOS.connect("activate", self.shutdown, 'sudo /usr/bin/xsm-exit kexec reloadOS')
+                cancel = gtk.ImageMenuItem(gtk.STOCK_CANCEL)
+                self.menu.append(reloadOS)
+                self.menu.append(cancel)
+                self.menu.show_all()
 
 	    #### SHUTDOWN
         btn2 = gtk.Button()
