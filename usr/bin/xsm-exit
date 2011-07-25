@@ -110,18 +110,16 @@ elif args[0] == "kexec":
         sys.exit(os.EX_DATAERR)
 
 
-    sys.path.insert( 0, '/usr/lib/libpybootutils/' ) # to import libpybootutils
-
     # GRUB 2 detection
     if os.path.isfile("/boot/grub/grub.cfg"):
-        import grub
-        List = grub.BootLoaderParser()
+        import libpybootutils.grub as bootParser
+        List = bootParser.BootLoaderParser()
         List.loadFile("/boot/grub/grub.cfg")
 
     # For GRUB 0.97 (Legacy)
     elif os.path.isfile("/boot/grub/menu.lst"):
-        import grubLegacy
-        List = grubLegacy.BootLoaderParser()
+        import libpybootutils.grubLegacy as bootParser
+        List = bootParser.BootLoaderParser()
         List.loadFile("/boot/grub/menu.lst")
 
     try:

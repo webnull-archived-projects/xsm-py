@@ -95,18 +95,17 @@ class PyApp(gtk.Window):
         if os.path.isfile("/usr/sbin/kexec") or os.path.isfile("/sbin/kexec") or os.path.isfile("/usr/bin/exec"):
             btnKexec.set_sensitive(True)
             self.menu = gtk.Menu() 
-            sys.path.insert( 0, '/usr/lib/libpybootutils' )
 
             # GRUB 2 detection
             if os.path.isfile("/boot/grub/grub.cfg"):
-                import grub
-                List = grub.BootLoaderParser()
+                import libpybootutils.grub as bootParser
+                List = bootParser.BootLoaderParser()
                 List.loadFile("/boot/grub/grub.cfg")
 
             # For GRUB 0.97 (Legacy)
             elif os.path.isfile("/boot/grub/menu.lst"):
-                import grubLegacy
-                List = grubLegacy.BootLoaderParser()
+                import libpybootutils.grubLegacy as bootParser
+                List = bootParser.BootLoaderParser()
                 List.loadFile("/boot/grub/menu.lst")
 
             try:
