@@ -23,20 +23,24 @@ X-Session Manager supports technologies and software:
   + XScreensaver  
 
 Author: webnull < webnull at ubuntu dot pl > (Its Jabber adress, dont send mail)
-16.07.2011:
+25.07.2011 (v.2.1.0):
+    * Fixed bug when GTK window was not appearing
+    + Added kscreensaver support
+
+16.07.2011 (v.2.0.1):
     * Fixed support for reloading kernel that was already loaded at current session
 
-16.07.2011:
+16.07.2011 (v.2.0.0.2):
     * Fixed error in /usr/bin/xsm-exit, usage wasnt terminating application
 
 
-16.07.2011:
+16.07.2011 (v.2.0.0.1):
     + Added KDE4 session
     + Added versioning informations
     + Updated locales
     + Lock function added in Python xsm-exit code
 
-15.07.2011:
+15.07.2011 (v.2.0):
     + Kexec support with GUI (wow, first GUI in GTK for Kexec!)
     + Rewrited xsm-exit code from Bash to Python
     + "Fast restart" button

@@ -62,7 +62,6 @@ class PyApp(gtk.Window):
 
     def __init__(self):
         super(PyApp, self).__init__()
-
         global MyDefLang
         self.set_resizable(False)
         self.set_title(MyDefLang[5])
@@ -77,7 +76,6 @@ class PyApp(gtk.Window):
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_icon_from_file("/usr/share/xsm/icons/logout_icon.png")
             
-
 	    #### REBOOT BUTTON
         btn1 = gtk.Button()
         btn1.set_size_request(170, 62);
@@ -182,35 +180,34 @@ class PyApp(gtk.Window):
 
 	    #### CHECK FOR XSCREENSAVER
         output = commands.getoutput('ps -aux')
-        if 'xscreensaver' in output or 'gnome-screensaver' in output:
+        if 'xscreensaver' in output or 'gnome-screensaver' in output or os.path.isfile("/usr/lib/libkscreensaver.so"):
             btn4.set_sensitive(True)
         else:
             print(MyDefLang[6])
             btn4.set_sensitive(False)
 
-            fixed = gtk.Fixed()
+        fixed = gtk.Fixed()
 
-            if style == "small":
-                fixed.put(btn1, 20, 30) # Restart
-                fixed.put(btnKexec, 200, 30) # Kexec restart "Fast restart"
-                fixed.put(btn2, 20, 112) # Shutdown
-                fixed.put(btn3, 20, 194) # Logout
-                fixed.put(btn4, 200, 194) # Lock (20,276)
-                fixed.put(btn5, 20, 276) # Hibernate
-                fixed.put(btn6, 200, 276) # Suspend
-            else:
-                fixed.put(btn1, 20, 30)
-                fixed.put(btnKexec, 200, 30) # Kexec restart "Fast restart"
-                fixed.put(btn2, 20, 112)
-                fixed.put(btn3, 20, 194)
-                fixed.put(btn4, 20, 276)
-                fixed.put(btn5, 20, 358)
-                fixed.put(btn6, 200, 358)
+        if style == "small":
+           fixed.put(btn1, 20, 30) # Restart
+           fixed.put(btnKexec, 200, 30) # Kexec restart "Fast restart"
+           fixed.put(btn2, 20, 112) # Shutdown
+           fixed.put(btn3, 20, 194) # Logout
+           fixed.put(btn4, 200, 194) # Lock (20,276)
+           fixed.put(btn5, 20, 276) # Hibernate
+           fixed.put(btn6, 200, 276) # Suspend
+        else:
+           fixed.put(btn1, 20, 30)
+           fixed.put(btnKexec, 200, 30) # Kexec restart "Fast restart"
+           fixed.put(btn2, 20, 112)
+           fixed.put(btn3, 20, 194)
+           fixed.put(btn4, 20, 276)
+           fixed.put(btn5, 20, 358)
+           fixed.put(btn6, 200, 358)
             
-            self.connect("destroy", gtk.main_quit)
-            
-            self.add(fixed)
-            self.show_all()
+        self.connect("destroy", gtk.main_quit)    
+        self.add(fixed)
+        self.show_all()
 
 
 PyApp()
