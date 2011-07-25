@@ -41,14 +41,12 @@ else
         mkdir /tmp/libpybootutils
         cd /tmp/libpybootutils
         git clone git://github.com/webnull/libpybootutils.git
-        cp /tmp/libpybootutils/usr/lib/pybootutils /usr/lib/pybootutils -r
+        cd libpybootutils
+        chmod +x setup.py
+        ./setup.py
+        cd /tmp
         rm -rf /tmp/libpybootutils
-        if [ -e "/usr/lib/libpybootutils" ]
-        then
-            echo -n " [OK]"
-        else
-            echo -n " [FAILED]"
-        fi
+        echo -n " [DONE]"
     fi
 fi 
 

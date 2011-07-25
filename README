@@ -27,6 +27,9 @@ X-Session Manager supports technologies and software:
 Author: webnull < webnull at ubuntu dot pl > (Its Jabber adress, dont send mail)
 
 Changelog:
+25.07.2011 (v.2.2.1):
+    + install.sh is now compatible with libpybootutils which uses setup.py
+
 25.07.2011 (v.2.2):
     + Added compatibility with libpybootutils >= 1.2
 
