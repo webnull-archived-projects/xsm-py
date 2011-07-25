@@ -25,6 +25,8 @@ X-Session Manager supports technologies and software:
   + KDE Screensaver
 
 Author: webnull < webnull at ubuntu dot pl > (Its Jabber adress, dont send mail)
+
+Changelog:
 25.07.2011 (v.2.1.0):
     * Fixed bug when GTK window was not appearing
     + Added kscreensaver support
