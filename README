@@ -16,6 +16,7 @@ Other dependencies:
     For screensavers support:
     + gnome-screensaver (optional)
     + xscreensaver (optional)
+    + kscreensaver (optional)
 
 X-Session Manager supports technologies and software:
   + Kexec
