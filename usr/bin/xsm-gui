@@ -107,7 +107,7 @@ class PyApp(gtk.Window):
         btn1.set_size_request(170, 62);
 
         box1 = xpm_label_box(self.window, "/usr/share/xsm/icons/system-reboot.xpm", MyDefLang[2])
-        btn1.connect("clicked", self.shutdown, 'reboot')
+        btn1.connect("clicked", self.shutdown, 'sudo /usr/bin/xsm-exit reboot')
         btn1.add(box1);
 
 	    #### FAST REBOOT BUTTON (KEXEC)
