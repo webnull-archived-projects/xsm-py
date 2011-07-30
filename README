@@ -27,6 +27,9 @@ X-Session Manager supports technologies and software:
 Author: webnull < webnull at ubuntu dot pl > (Its Jabber adress, dont send mail)
 
 Changelog:
+30.07.2011 (v.2.3.3):
+    * Fixed gnome-screensaver support
+
 30.07.2011 (v.2.3.2):
     * Fixed hibernate and suspend icons
 

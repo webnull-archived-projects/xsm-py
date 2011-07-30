@@ -67,7 +67,7 @@ elif args[0] == "lock":
         os.system("/usr/bin/xscreensaver-command -lock")
     elif 'gnome-screensaver' in output:
         print "Going to sleep with gnome-screensaver..."
-        os.system("/usr/bin/gnome-screensaver") 
+        os.system("/usr/bin/gnome-screensaver-command --lock") 
     elif os.path.isfile("/usr/lib/libkscreensaver.so") and os.path.isfile("/usr/bin/qdbus"):
         print "Going to sleep with kscreensaver..."
         os.system("/usr/bin/qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock")
