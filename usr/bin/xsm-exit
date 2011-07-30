@@ -75,6 +75,11 @@ elif args[0] == "lock":
         print "No any working screensaver application found running."
 
 elif args[0] == "kexec":
+    if os.path.isfile("/sbin/kexec"):
+        kexecPath = "/sbin/kexec"
+    else:
+        kexecPath = "/usr/sbin/kexec"
+
     if args[1] == "reloadOS":
         # get kernel parametrs
         cmdline = commands.getoutput("cat /proc/cmdline")
@@ -118,8 +123,7 @@ elif args[0] == "kexec":
                 sys.exit(os.EX_OSFILE)
 
         print "Applying CMDLine: "+newCMDLine
-
-        os.system("/usr/sbin/kexec "+kernel+" --command-line=\""+newCMDLine+"\"")
+        os.system(kexecPath+" "+kernel+" --command-line=\""+newCMDLine+"\"")
         sys.exit(os.EX_DATAERR)
 
 
@@ -149,7 +153,7 @@ elif args[0] == "kexec":
             print "[kexec] No maching operating system found for id="+str(int(args[1]))
             sys.exit(os.EX_DATAERR)
 
-        kexecArgs = "/usr/sbin/kexec"
+        kexecArgs = kexecPath
 
         # check if kernel exists - it will works here if its in /boot
         if os.path.isfile(kexecOS["kernel"]):
