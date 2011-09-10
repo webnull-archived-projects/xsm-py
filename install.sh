@@ -43,7 +43,7 @@ else
         git clone git://github.com/webnull/libpybootutils.git
         cd libpybootutils
         chmod +x setup.py
-        ./setup.py
+        ./setup.py install
         cd /tmp
         rm -rf /tmp/libpybootutils
         echo -n " [DONE]"
